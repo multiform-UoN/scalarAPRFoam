@@ -1,0 +1,20 @@
+#!/bin/sh
+. $WM_PROJECT_DIR/bin/tools/RunFunctions
+
+# Source tutorial run functions
+. $WM_PROJECT_DIR/bin/tools/RunFunctions
+
+# Number of cores
+N=${1:-1}
+
+./Allclean
+
+./makeMesh
+
+./runPorousSimpleFoam $N
+
+latestTime=$(foamListTimes -latestTime | tail -1)
+cp -r 0/C* $latestTime/
+sed -i "s/nNonOrthogonalCorrectors[[:space:]]*2;/nNonOrthogonalCorrectors\t\t\t0;/g" system/fvSolution
+
+./runReactiveTransportFoam $N

@@ -1,0 +1,13 @@
+xmin	-4;
+xmax	4;
+ymin	-4;
+ymax	4;
+zmin	-4;
+zmax	4;
+CpD     6.25;
+dg      0.001;
+refLev	2;
+xloc    2;
+yloc    2;
+zloc    2;
+p0      5e-7;

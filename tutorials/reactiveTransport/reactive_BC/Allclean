@@ -1,0 +1,19 @@
+#!/bin/bash
+cd ${0%/*} || exit 1    # run from this directory
+
+# Source tutorial clean functions
+. $WM_PROJECT_DIR/bin/tools/CleanFunctions
+
+cleanCase
+
+rm -rf constant/polyMesh > /dev/null 2>&1
+rm -rf log* > /dev/null 2>&1
+rm -rf *.dat > /dev/null 2>&1
+rm -rf *.png > /dev/null 2>&1
+rm -rf *.txt > /dev/null 2>&1
+rm -rf processor* > /dev/null 2>&1
+rm -rf postProcessing > /dev/null 2>&1
+rm -rf dynamicCode > /dev/null 2>&1
+
+
+sed -i "s/nNonOrthogonalCorrectors[[:space:]]*0;/nNonOrthogonalCorrectors\t\t\t2;/g" system/fvSolution

@@ -1,0 +1,51 @@
+#!/bin/sh
+
+#Main script for running simulations
+#Check that you have modified the caseSetup file before starting Allrun
+
+# Source tutorial run functions
+. $WM_PROJECT_DIR/bin/tools/RunFunctions
+
+# Number of cores
+N=${1:-1}
+
+
+if [ $N -eq 1 ]; then
+    echo "Running porousSimpleFoam"
+    porousSimpleFoam -noFunctionObjects > log1b.porousSimpleFoam
+
+else
+    echo "Running decomposition for $N processors"
+    rm -rf system/decomposeParDict > /dev/null 2>&1
+    cp system/decomposeParDict.orig system/decomposeParDict
+    sed -i "s/N_proc/$N/g" system/decomposeParDict
+
+    decomposePar -force > log1a.decomposition4porousSimpleFoam
+
+    ERROR_CODE=$?
+    if [ $ERROR_CODE -ne 0 ]; then
+        echo "\nError:"
+        echo "Domain decomposition failed! Check the corresponding log file.\n" >&2
+        exit $ERROR_CODE
+    fi
+
+
+    echo "Running porousSimpleFoam in parallel using $N cores"
+    mpirun -np $N porousSimpleFoam -parallel -noFunctionObjects > log1b.porousSimpleFoam
+
+    if [ $? -eq 0 ]; then
+        echo "Reconstructing fields after porousSimpleFoam"
+        reconstructPar -latestTime > log1c.reconstruct4porousSimpleFoam
+
+        ERROR_CODE=$?
+        if [ $ERROR_CODE -ne 0 ]; then
+        echo "\nError:"
+        echo "Domain recomposition failed! Check the corresponding log file.\n" >&2
+        exit $ERROR_CODE
+        fi
+    fi
+fi
+
+echo "porousSimpleFoam end!"
+
+#------------------------------------------------------------------------------

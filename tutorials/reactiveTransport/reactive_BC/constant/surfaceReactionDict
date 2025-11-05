@@ -1,0 +1,38 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  8
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "constant";
+    object      reactionDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+reaction1
+{
+    k             1;
+    species       (Cg Ch Cp);
+    stoichiometry (-1 7 0);
+    exponents     (1 0 0);
+    kS            (0 0 0);
+    exponentsS    (0 0 0);
+    exponentsS_total 0;
+}
+
+reaction2
+{
+    k             0.1;
+    species       (Cg Ch Cp);
+    stoichiometry (-1 -1 1);
+    exponents     (1 0.5 0);
+    kS            (0 0 0);
+    exponentsS    (0 0 0);
+    exponentsS_total 0;
+}

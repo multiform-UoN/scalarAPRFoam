@@ -1,0 +1,105 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  8
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      fvSolution;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+FlowConverg	1e-6; 
+ReacConverg 1e-6;
+
+
+solvers
+{
+    p
+    {
+        solver          GAMG;
+        preconditioner  DIC;
+        tolerance       #calc "$FlowConverg*5e-3";
+        relTol          1e-2;
+        smoother        GaussSeidel;
+        nCellsInCoarsestLevel 20;
+    }
+
+  	"(U|k|epsilon)"
+    {
+        solver          smoothSolver;
+        smoother        symGaussSeidel;
+        nSweeps         2;
+        tolerance       #calc "$FlowConverg*5e-3";
+        relTol          1e-2; 
+    }
+
+    "M.*"
+    {
+        solver          PBiCGStab;
+        preconditioner  DILU;
+        tolerance       #calc "$ReacConverg*5e-3";
+        relTol          1e-2;
+    }
+    "T|TFinal"
+    {
+        solver          PBiCGStab;
+        preconditioner  DILU;
+        tolerance       #calc "$ReacConverg*1e-5";
+        relTol          1e-5;
+
+    }
+
+}
+
+"PIMPLE|SIMPLE|PISO"
+{
+    
+    nOuterCorrectors	1;
+    nNonOrthogonalCorrectors			2;
+
+
+
+    outerCorrectorResidualControl
+    {
+       ".*"
+        {
+            tolerance $ReacConverg;
+            relTol    0;
+        }
+
+    }
+    residualControl
+    {
+    	U	    $FlowConverg;
+    	p	    $FlowConverg;
+        "M.*"  	$ReacConverg;
+        
+
+    }
+ 
+}
+
+relaxationFactors
+{
+    fields
+    {
+        p       0.4;
+    }
+
+    equations
+    {
+        U       0.85;
+        "M.*"   0.95;
+
+    }
+}
+
+
+// ************************************************************************* //
