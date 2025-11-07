@@ -2,23 +2,26 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) The OpenFOAM Foundation, Ltd.
-     \\/     M anipulation  | 
+    \\  /    A nd           | Copyright (C) 2011-2020 The OpenFOAM Foundation
+     \\/     M anipulation  |
 -------------------------------------------------------------------------------
-  
-  Modifications and additional contributions:
-  
-  MultiForm Group, University of Nottingham
-  Copyright (C) Matteo Icardi and collaborators
-  Contributions to this file are licensed under the same GPLv3 terms as OpenFOAM.
+                      Copyright (C) 2025 Matteo Icardi
+-------------------------------------------------------------------------------
+License
+    This file is part of scalarAPRFoam.
 
-  This work is based on OpenFOAM, with substantial portions copied, modified, or 
-  extended under the GNU General Public License (GPLv3).
-  Please refer to the original OpenFOAM copyright notice for the base framework, 
-  and to MultiForm Group for new additions or modifications. For the full terms of 
-  this license, see <http://www.gnu.org/licenses/>.
+    scalarAPRFoam is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
+    scalarAPRFoam is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
+    You should have received a copy of the GNU General Public License
+    along with scalarAPRFoam.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
     Foam::RobinFvPatchField
