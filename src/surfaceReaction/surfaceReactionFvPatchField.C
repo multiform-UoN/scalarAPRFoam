@@ -23,6 +23,14 @@ License
     You should have received a copy of the GNU General Public License
     along with scalarAPRFoam.  If not, see <http://www.gnu.org/licenses/>.
 
+Description
+    This boundary condition implements a Robin boundary condition for a surface
+    reaction.
+
+    The reaction rate is given by a general kinetic law, which can include an
+    adsorption term. The parameters of the reaction (rate constants, stoichiometric
+    coefficients, exponents, etc.) are read from the `surfaceReactionDict` dictionary.
+
 \*---------------------------------------------------------------------------*/
 
 #include "surfaceReactionFvPatchField.H"
@@ -204,7 +212,10 @@ void Foam::surfaceReactionFvPatchField::updateCoeffs()
 
         label j0(-1);                                                // Initialization index of the current species
 
-
+        // Calculate the reaction rate based on the kinetic law
+        //
+        // r = k * product(C_i^a_i) / (1 + sum(kS_j*C_j^b_j))^exponentsS_total
+        //
         scalarField reaction(this->size(), k);                      // Reaction rate initialization to k 
         
         forAll(species, j)                                          // Loop over all species to calculate the numerator of the reaction rate
@@ -242,6 +253,15 @@ void Foam::surfaceReactionFvPatchField::updateCoeffs()
 
         reaction /= Foam::pow(reactionDenominator,exponentsS_total);                            // Update the reaction rate by the denominator
 
+        // Linearize the reaction rate to obtain the coefficients of the Robin boundary condition
+        //
+        // R = R(C_0) + (C - C_0)*dR/dC|_{C_0} = F + K*(C - C_0)
+        //
+        // where:
+        // F = R(C_0) - C_0*dR/dC|_{C_0}
+        // K = dR/dC|_{C_0}
+        //
+        // This is done to improve the stability of the numerical solution.
         if (j0 >= 0)                                                // If the species was found do: else the species doesn't involve in the reaction 
         {
             // RobinKeff_ update summing the implicit part of this reaction (the implicit part is equal to the first concentration derivative)

@@ -86,6 +86,7 @@ forAll(reaction, re)                    //- loop over all the reactions
             
             else if(n[j] < 0)
             {
+                // Add a small constant to avoid division by zero when C=0 and n<0
                 r *= Foam::pow((C*Foam::pos(C))+SMALL_C,n[j])*Foam::pos(C)/dimensionedScalar("one", dimensionSet(0, -3*n[j], 0, 0, n[j], 0, 0), 1.0);      //- Update the reaction rate, but avoid the ratio 1/0 when n<1 and C=0
             }
 

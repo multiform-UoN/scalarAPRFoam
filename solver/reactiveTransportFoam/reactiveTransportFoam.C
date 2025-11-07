@@ -28,8 +28,16 @@ Application
 
 Description
     Transient solver for multiple species transport with
-    arbitrary volumetric reaction
+    arbitrary volumetric reaction.
     Coupling is implemented using a segregated algorithm.
+
+    The solver handles multiple species transport, with reactions occurring in 
+    the volume of the domain. It is possible to define different reactive zones
+    and different diffusivity for each species in each zone.
+
+    The solver is based on a segregated approach, where the transport equation
+    for each species is solved separately. The PIMPLE algorithm is used for the
+    pressure-velocity coupling.
 
 \*---------------------------------------------------------------------------*/
 
@@ -86,6 +94,8 @@ int main(int argc, char *argv[])
     }
   }
   
+  // Loop over all reactions to define a specific flagReactive field for each one.
+  // This allows to have different reactive zones for different reactions.
   forAll(reaction, re)                          //- loop over all the reactions to define the different flagReactive field for each reaction
   {
     flagReactivePtrL.set(
@@ -110,6 +120,7 @@ int main(int argc, char *argv[])
       )
     );  
 
+    // If a specific reactive zone is defined for the reaction, it overwrites the global one.
     if (reaction[re].found("zoneName"))               //- if a specific reactive zone is defined for the reaction it overwritten the global one, else the global one is used
     {
       Info<< "Reaction " << reactionEntries[re].keyword() << " set a specific reactive zone" << endl; 
@@ -139,7 +150,7 @@ int main(int argc, char *argv[])
         }
       }
     }
-    else
+    else // Otherwise, the global reactive zone is used.
     {
       flagReactivePtrL[re] = flagReactive;
     }
@@ -150,6 +161,8 @@ int main(int argc, char *argv[])
  
   //*** create effective diffusivity surface field ***//
 
+  // Loop over all species to calculate the effective diffusivity field.
+  // This is needed to account for different diffusivities in the solid and fluid zones.
   forAll(species, sp)                               //- loop over all the species                    
   {
     dimensionedScalar D(species[sp].lookup("D"));   //- Diffusivity in the fluid  
@@ -165,7 +178,10 @@ int main(int argc, char *argv[])
     }
 
 
-    //- Create effective diffusivity SURFACE field as a armonic mean of VOL diffusivity, to take into account the different diffusivity in the solid and in the fluid
+    // Create an effective diffusivity SURFACE field as a harmonic mean of the VOLUMETRIC
+    // diffusivity. This is done to properly handle the interface between zones with
+    // different diffusivities (e.g. fluid and solid).
+    // The flagReactive field is used to distinguish between the two zones.
     DsupPtrL.set
     (
       sp,
@@ -215,6 +231,19 @@ int main(int argc, char *argv[])
         while (pimple.correctNonOrthogonal())     //- Non-orthogonal correction loop
         {
 
+          // Solve the transport equation for species C
+          //
+          // dC/dt + div(phi,C) - div(D*grad(C)) = R
+          //
+          // where:
+          // C    is the species concentration
+          // phi  is the volumetric flux
+          // D    is the effective diffusivity
+          // R    is the reaction rate
+          //
+          // The reaction source term R is linearized as R = Rk*C + R,
+          // where Rk is the derivative of R with respect to C.
+          // This is done to improve the stability of the numerical solution.
           fvScalarMatrix CEqn
           (
             fvm::ddt(C)
