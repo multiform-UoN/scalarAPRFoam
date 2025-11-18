@@ -205,6 +205,18 @@ int main(int argc, char *argv[])
   }
 
 
+  volScalarField MbyTot
+  (
+    IOobject
+    (
+      "MbyTot",
+      runTime.constant(),
+      mesh,
+      IOobject::NO_READ,
+      IOobject::NO_WRITE
+    ),
+    porosity*flagReactive + (1.0 - flagReactive)
+  );
 
   
   Info<< "\nStarting time loop\n" << endl;
@@ -233,9 +245,10 @@ int main(int argc, char *argv[])
 
           // Solve the transport equation for species C
           //
-          // dC/dt + div(phi,C) - div(D*grad(C)) = R
+          // d(MbyTot*C)/dt + div(phi,C) - div(MbyTot*D*grad(C)) = MbyTot*R
           //
           // where:
+          // MbyTot is the porosity
           // C    is the species concentration
           // phi  is the volumetric flux
           // D    is the effective diffusivity
@@ -246,13 +259,13 @@ int main(int argc, char *argv[])
           // This is done to improve the stability of the numerical solution.
           fvScalarMatrix CEqn
           (
-            fvm::ddt(C)
+            fvm::ddt(MbyTot,C)
             + fvm::div(phi,C,"div(phi,C)")
-            - fvm::laplacian(Dsup,C,"laplacian(D,C)")
+            - fvm::laplacian(fvc::interpolate(MbyTot)*Dsup,C,"laplacian(D,C)")
             ==
-            - fvm::SuSp(-Rk,C)                      //- Add the implicit part to the matrix diagonal if negative
-            + R                                     //- Add total reaction rate as explicit source term
-            - Rk*C                                  //- Subtract the implicit part as explicit source term  to avoid double counting
+            - fvm::SuSp(-MbyTot*Rk,C)                      //- Add the implicit part to the matrix diagonal if negative
+            + MbyTot*R                                     //- Add total reaction rate as explicit source term
+            - MbyTot*Rk*C                                  //- Subtract the implicit part as explicit source term  to avoid double counting
             + fvOptions(C)
           );
 

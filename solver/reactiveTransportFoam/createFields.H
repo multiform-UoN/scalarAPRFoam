@@ -38,7 +38,7 @@ PtrList<entry> reactionEntries
 (
     reactionDict.lookup("reactions")
 );
-
+scalar porosity = reactionDict.lookup<scalar>("porosity");
 reaction.setSize(reactionEntries.size());
 PtrList<volScalarField> rPtrL(reaction.size());
 PtrList<volScalarField> flagReactivePtrL(reaction.size());

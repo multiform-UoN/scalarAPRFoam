@@ -22,6 +22,7 @@ FoamFile
 //k [ 0 -3(1-n) -1 0 (1-n) 0 0] 
 
 zoneName    catalyst;   // Name of the cellsZone where the reaction occurs. You can e "all" to consider all cells
+porosity    0.56;        // Porosity of the medium where the reaction occurs
 
 reactions
 (

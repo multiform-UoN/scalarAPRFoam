@@ -21,6 +21,7 @@ FoamFile
 
 
 zoneName    none;   // Name of the cellsZone where the reaction occurs. You can e "all" to consider all cells
+porosity    1;        // Porosity of the medium where the reaction occurs
 
 reactions
 (
