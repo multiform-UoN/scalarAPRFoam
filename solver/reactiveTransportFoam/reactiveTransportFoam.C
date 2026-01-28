@@ -204,7 +204,7 @@ int main(int argc, char *argv[])
     );
   }
 
-
+  scalar porosity = reactionDict.lookup<scalar>("porosity");
   volScalarField MbyTot
   (
     IOobject
