@@ -1,0 +1,4 @@
+Robin/RobinFvPatchFields.C
+surfaceReaction/surfaceReactionFvPatchField.C
+
+LIB = $(FOAM_USER_LIBBIN)/libscalarAPRFoam
