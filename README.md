@@ -1,12 +1,12 @@
 # scalarAPRFoam
 
-A scalar reactive transport solver for OpenFOAM available for OpenFOAM-8 and OpenFOAM-13, with a surface reaction boundary condition now available in OpenFOAM-8.
+A scalar reactive transport solver for OpenFOAM available for OpenFOAM-8 and OpenFOAM-13, and a surface reaction boundary condition available in OpenFOAM-8 and OpenFOAM-13.
 
 This solver was developed by Matteo Icardi and Diego Fida.
 
 ## Description
 
-`scalarAPRFoam` is a transient solver for multiple species transport with arbitrary volumetric and surface reactions. The coupling between species is implemented using a segregated algorithm.
+`reactiveTransportFoam` is a transient solver for multiple species transport with arbitrary volumetric and surface reactions. The coupling between species is implemented using a segregated algorithm.
 
 The solver is based on the `pimpleFoam` solver and includes:
 -   Transport equations for multiple species.
@@ -25,12 +25,13 @@ $R_{i} =\frac{k_i\prod^n_{j=1}c_j^{a_{j,i}}}{\left(1+\sum^n_{j=1}\left(K_{j,i}c_
 
 and is implemented by splitting this term in an implicit and explicit contribution:
 
-$R_i=  R_i(\textbf{c}^0) + \sum_{j=1}^n \frac{\partial R_i(\textbf{c}^0)}{\partial c_j} (c_j-c_j^0)$
+$R_i =  R_i(\textbf{c}^0) + \sum_{j=1}^n \frac{\partial R_i(\textbf{c}^0)}{\partial c_j} (c_j-c_j^0)$
 
-$K=  \frac{\partial R_i(\textbf{c}^0)}{\partial c_i}$
+$K =  \frac{\partial R_i(\textbf{c}^0)}{\partial c_i}$
 
 $F =    R_i(\mathbf{c}^0) - \frac{\partial R_i(\textbf{c}^0)}{\partial c_i}  \ c_i^0 $ 
 
 ## Notes
--   A scientific paper describing the solver and its application is in preparation. The authors of the paper include Matteo Icardi, Diego Fida, and others.
--   The tutorial present is developed in OpenFoam-8 
+-   A scientific paper describing the solver and its application is submitted. The authors of the paper include Matteo Icardi, Diego Fida, and others.
+-   The script finding optimal parameters of the kinetic model from experimental data is available in `kineticModelDerivation/parameterOptimization.py`.
+-   The tutorial present is developed in OpenFoam-8.
